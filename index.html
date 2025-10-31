@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project 3</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Complaints per Year by Precinct</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 40px;
+    }
+    svg {
+      background: #f9f9f9;
+    }
+    #controls {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Project 3</h1>
-    <h2>Team Name: Smooth JAZ</h2>
+  <h2>Number of Complaints Per Year by Precinct</h2>
 
-    <script type="module" src="visualization.js"></script>
+  <div id="controls">
+    <label for="precinctSelect"><b>Select Precinct:</b></label>
+    <select id="precinctSelect"></select>
+  </div>
+
+  <svg id="bubbleChart" width="900" height="500"></svg>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
+
+
