@@ -28,3 +28,20 @@ svg {
     border: 1px solid #ccc;
     background: #fff;
 }
+
+/* grid heatmap formatting */
+.square {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+.square:hover {
+    stroke: #222;
+    stroke-width: 2px;
+}
+
+/* Legend formatting */
+.legend {
+    display: block;
+    margin: 20px auto;
+}
