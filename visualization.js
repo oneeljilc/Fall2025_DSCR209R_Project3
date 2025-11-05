@@ -10,16 +10,14 @@ const height = +svg.attr("height");
 const yearSlider = document.getElementById("yearSlider");
 const yearLabel = document.getElementById("yearLabel");
 
-// Grid setup
-const numCols = 10;          // number of columns in grid
-const cellSize = 70;         // size of each square
-const padding = 40;          // space sround grid
-
 // Color scale setup
 const colorScale = d3.scaleSequential(d3.interpolateYlOrRd);
 
-// Load data from JSON
-d3.json("data/complaints_by_precinct.json").then(data => {
+// Load data from JSON & GeoJSON
+Promise.all([
+  d3.json("data/complaints_by_precinct.json"),
+  d3.json("data/nyc_precincts.geojson")
+]).then(([data, geoData]) => {
   // Convert numeric values
   data.forEach(d => {
     d.year_received = +d.year_received;
@@ -41,29 +39,46 @@ d3.json("data/complaints_by_precinct.json").then(data => {
   const maxComplaints = d3.max(data, d => d.total_complaints);
   colorScale.domain([0, maxComplaints]);
 
-  // Draw Heatmap Squares
-  function updateHeatmap(selectedYear) {
-    yearLabel.textContent = selectedYear; // Update label text each time the year is changed
-    const filtered = data.filter(d => d.year_received === +selectedYear); // Filter data to only show records from the selected year
+// Map projection and path generator
+const projection = d3.geoMercator()
+  .fitSize([width, height], geoData);
 
-    const squares = svg.selectAll(".square").data(filtered, d => d.precinct); // select all existing squares and binds them to new filtered data, use precinct as key so squares stay in same spot across updates
+const path = d3.geoPath().projection(projection);
 
-    squares.join(
-      enter => enter.append("rect") // When load a new year, new squares are added for each precinct
-        .attr("class", "square")
-        .attr("x", (d, i) => (i % numCols) * (cellSize + 5) + padding)
-        .attr("y", (d, i) => Math.floor(i / numCols) * (cellSize + 5) + padding)
-        .attr("width", cellSize)
-        .attr("height", cellSize)
-        .attr("fill", d => colorScale(d.total_complaints))
-        .append("title")
-        .text(d => `Precinct ${d.precinct}\n${d.total_complaints} complaints`),
-      update => update // Existing squares change color if counts update
-        .transition().duration(200)
-        .attr("fill", d => colorScale(d.total_complaints)),
-      exit => exit.remove() // squares that no longer match data are removed
-    );
-  }
+// Draw Heatmap
+function updateHeatmap(selectedYear) {
+  yearLabel.textContent = selectedYear; // update label next to slider
+
+  const yearRows = data.filter(d => d.year_received === +selectedYear); // rows for this year only
+  const byPrecinct = new Map(yearRows.map(d => [d.precinct, d.total_complaints])); // lookup: precinct -> total
+
+  geoData.features.forEach(f => { // attach totals into geojson for this year
+    const p = String(f.properties.precinct);
+    f.properties.total_complaints = byPrecinct.get(p) ?? 0; // 0 if no data
+  });
+
+  const precinctPaths = svg.selectAll(".precinct") // bind polygons to svg
+    .data(geoData.features, d => String(d.properties.precinct));
+
+  precinctPaths.join(
+    enter => enter.append("path") // draw precinct for first time
+      .attr("class", "precinct")
+      .attr("d", path)
+      .attr("fill", d => colorScale(d.properties.total_complaints))
+      .append("title") // tooltip on hover
+      .text(d => `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`),
+
+    update => update // recolor on year change
+      .transition().duration(200)
+      .attr("fill", d => colorScale(d.properties.total_complaints)),
+
+    exit => exit.remove() // not used in geo but kept for consistency
+  );
+
+  svg.selectAll(".precinct title") // refresh tooltip text when slider moves
+    .text(d => `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`);
+}
+
 
   // Draw Color Legend
   const legendWidth = 300;
