@@ -25,8 +25,23 @@ Promise.all([
     d.precinct = d.precinct.toString();
   });
 
-  // Determine year range dynamically
-  const years = [...new Set(data.map(d => d.year_received))].sort((a, b) => a - b);
+//Remove data points where the number of complaint in a year is 0
+  const complaintsByYear = d3.rollups(
+  data,
+  v => d3.sum(v, d => d.total_complaints),
+  d => d.year_received
+);
+
+// Keep only years that have at least one complaint
+const years = complaintsByYear
+  .filter(([year, total]) => total > 0)
+  .map(([year]) => year)
+  .sort((a, b) => a - b);
+
+  //update the data to exclude data points with empty years 
+  data = data.filter(d => years.includes(d.year_received));
+
+// Determine year range dynamically
   yearSlider.min = years[0];
   yearSlider.max = years[years.length - 1];
   yearSlider.value = years[0];
@@ -49,40 +64,59 @@ const path = d3.geoPath().projection(projection);
 function updateHeatmap(selectedYear) {
   yearLabel.textContent = selectedYear; // update label next to slider
 
-  const yearRows = data.filter(d => d.year_received === +selectedYear); // rows for this year only
+   const yearRows = data.filter(
+    d => d.year_received === +selectedYear && d.total_complaints > 0
+  ); // rows for this year only and have at least one complaint
+
   const byPrecinct = new Map(yearRows.map(d => [d.precinct, d.total_complaints])); // lookup: precinct -> total
 
-  geoData.features.forEach(f => { // attach totals into geojson for this year
+ //attach totals to every precicnct in the GEO Json use 0 is missing 
+  geoData.features.forEach(f => {
     const p = String(f.properties.precinct);
-    f.properties.total_complaints = byPrecinct.get(p) ?? 0; // 0 if no data
+    f.properties.total_complaints = byPrecinct.get(p) ?? 0;
   });
-
+  
+  // bind all precinct to paths 
   const precinctPaths = svg.selectAll(".precinct") // bind polygons to svg
     .data(geoData.features, d => String(d.properties.precinct));
 
-  precinctPaths.join(
-    enter => enter.append("path") // draw precinct for first time
+precinctPaths.join(
+    enter => enter.append("path")
       .attr("class", "precinct")
       .attr("d", path)
-      .attr("fill", d => colorScale(d.properties.total_complaints))
-      .append("title") // tooltip on hover
-      .text(d => `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`),
+      .attr("stroke", "#444")
+      .attr("stroke-width", 0.5)
+      .attr("fill", d =>
+        d.properties.total_complaints === 0
+          ? "#e0e0e0" 
+          : colorScale(d.properties.total_complaints)
+      )
+      .append("title")
+      .text(d =>
+        `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`
+      ),
 
-    update => update // recolor on year change
-      .transition().duration(200)
-      .attr("fill", d => colorScale(d.properties.total_complaints)),
+   update => update
+      .transition().duration(250)
+      .attr("fill", d =>
+        d.properties.total_complaints === 0
+          ? "#e0e0e0"
+          : colorScale(d.properties.total_complaints)
+      ),
 
-    exit => exit.remove() // not used in geo but kept for consistency
+    exit => exit.remove()
   );
 
-  svg.selectAll(".precinct title") // refresh tooltip text when slider moves
-    .text(d => `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`);
+  // update tooltip text dynamically 
+  svg.selectAll(".precinct title")
+    .text(d =>
+      `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`
+    );
 }
 
-
-  // Draw Color Legend
+  // Draw Color Legend, decreased height to make the legend more readable
   const legendWidth = 300;
-  const legendHeight = 15;
+  const legendHeight = 10;
 
   const legendSvg = d3.select("body") // Add svg object for legend
     .append("svg")
