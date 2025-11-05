@@ -29,13 +29,25 @@ svg {
     background: #fff;
 }
 
-/* grid heatmap formatting */
+/* grid heatmap formatting (no longer used) */
 .square {
     stroke: #000;
     stroke-width: 1px;
 }
 
 .square:hover {
+    stroke: #222;
+    stroke-width: 2px;
+}
+
+/* geo heatmap precinct formatting */
+.precinct {
+    stroke: #000;
+    stroke-width: 1px;
+    cursor: pointer;
+}
+
+.precinct:hover {
     stroke: #222;
     stroke-width: 2px;
 }
