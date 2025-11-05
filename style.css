@@ -1,3 +1,4 @@
+/* Enable dark mode */
 html {
     color-scheme: light dark;
 
@@ -6,11 +7,41 @@ html {
 }
 
 body {
-    /* Set line height to 1.5 times the font size
-    and use the OS's UI font as the website font
-    */
+    /* Set line height to 1.5 times the font size and use the OS's UI font as the website font (from lab)*/
     font: 100%/1.5 system-ui;
     max-width: 100ch;
     margin-inline: auto;
     padding: 1.5rem 1rem;
+}
+
+h1 {
+    margin-bottom: 1em;
+}
+
+/* yearSlider formatting*/
+.controls {
+    margin-bottom: 1.5em;
+}
+
+/* heatmap svg object formatting */
+svg {
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+/* grid heatmap formatting */
+.square {
+    stroke: #000;
+    stroke-width: 1px;
+}
+
+.square:hover {
+    stroke: #222;
+    stroke-width: 2px;
+}
+
+/* Legend formatting */
+.legend {
+    display: block;
+    margin: 20px auto;
 }
