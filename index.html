@@ -9,9 +9,17 @@
 </head>
 <body>
     <!--Header/Title-->
-    <h1>Project 3</h1>
-    <h1>Mapping Misconduct: Complaint Trends Across NYC Precincts</h1>
-    <h2>Team Name: Smooth JAZ</h2>
+    <div class="page-header">Project 3 · Team Smooth JAZ</div>
+    <div class="title-block">
+      <h1 class="main-title">Mapping Misconduct: Complaint Trends Across NYC Precincts</h1>
+     <p class="subtitle">
+      From 1985 to 2019, civilian complaints against the NYPD increased across NYC, but the escalation was 
+      driven by a small set of precincts — especially Brooklyn’s 75th, which had more than 
+      twice the complaints of any other precinct and remained a consistent hotspot over the 
+      decades.
+      </p>
+  </div>
+
 
     <!--yearSlider-->
     <div class="controls">
@@ -20,8 +28,14 @@
         <span id="yearLabel">1985</span>
     </div>
 
+    <!--Legend-->
+    <div id="legend-container"></div>
+
     <!--heatmap-->
     <svg id="heatmap" width="825" height="675"></svg>
+
+    <!--brushing tooltip-->
+    <div id="brush-tip">💡 Click + drag on map to select precincts</div>
 
     <!-- Include Brush Info Panel (dynamically updated by JS) -->
   <div id="brush-info">

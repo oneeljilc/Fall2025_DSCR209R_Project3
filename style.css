@@ -8,26 +8,24 @@ html {
 
 body {
     /* Set line height to 1.5 times the font size and use the OS's UI font as the website font (from lab)*/
-    font: 100%/1.5 system-ui;
-    max-width: 100ch;
+    font: 100%/1.6 system-ui;
+    max-width: 85ch;
     margin-inline: auto;
-    padding: 1.5rem 1rem;
+    padding: 2rem 1.25rem;
 }
 
 h1 {
     margin-bottom: 1em;
 }
 
-/* yearSlider formatting*/
-.controls {
-    margin-bottom: 1.5em;
-}
-
 /* heatmap svg object formatting */
 svg {
     border: 1px solid #ccc;
     background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
 }
+
 
 /* grid heatmap formatting (no longer used) */
 .square {
@@ -53,10 +51,20 @@ svg {
 }
 
 /* Legend formatting */
+#legend-container {
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
 .legend {
     display: block;
-    margin: 20px auto;
+    margin: 0; /* remove auto-centering */
 }
+
+#legend-container svg {
+    display: block;
+}
+
 
 /*arguments for brush stroke*/
 .precinct.selected {
@@ -72,7 +80,71 @@ svg {
 }
 
 #brush-info {
-  margin-top: 10px;
-  font-family: sans-serif;
-  line-height: 1.4;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+    font-size: 0.95rem;
+    color: #333;
 }
+
+
+/* Year slider */
+.controls {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1rem;
+}
+
+#yearSlider {
+    width: 450px;
+}
+
+/* Title block layout */
+.title-block {
+    margin-bottom: 2rem;
+}
+
+/* Main title styling */
+.main-title {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* Subtitle (already added but enhanced) */
+.subtitle {
+    font-size: 1.15rem;
+    color: #555;
+    margin-top: 0.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    max-width: 70ch;
+}
+
+/* Meta info under subtitle */
+.meta {
+    font-size: 0.95rem;
+    color: #777;
+    margin-bottom: 1.5rem;
+}
+
+/*header at top of page */
+.page-header {
+    font-size: 0.9rem;
+    color: #666;
+    letter-spacing: 0.3px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;  /* thin dividing line */
+}
+
+#brush-tip {
+  font-size: 0.9rem;
+  color: #666;
+}
+

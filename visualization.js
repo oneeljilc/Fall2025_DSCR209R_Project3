@@ -118,7 +118,7 @@ precinctPaths.join(
   const legendWidth = 300;
   const legendHeight = 10;
 
-  const legendSvg = d3.select("body") // Add svg object for legend
+  const legendSvg = d3.select("#legend-container") // Add svg object for legend
     .append("svg")
     .attr("width", legendWidth + 80)
     .attr("height", 60)
@@ -164,7 +164,7 @@ precinctPaths.join(
     .attr("y", -5)
     .attr("text-anchor", "middle")
     .attr("font-weight", "bold")
-    .text("Total Complaints");
+    .text("Number of Complaints");
 
   // Initialize heatmap on page load
   updateHeatmap(+yearSlider.value);
@@ -231,12 +231,12 @@ const infoBox = d3.select("body").selectAll("#brush-info")
 
     // Update info box with per-precinct list and total
     infoBox.html(`
+      <strong>Total complaints:</strong> ${totalComplaints.toLocaleString()}<br>
       <strong>Selected precincts:</strong> ${
         selectedPrecincts.length > 0 ? selectedPrecincts.join(", ") : "None"
       }<br>
       <strong>Complaints per precinct:</strong><br>
-      ${breakdownText}<br>
-      <strong>Total complaints:</strong> ${totalComplaints.toLocaleString()}
+      ${breakdownText}
     `);
   }
 
