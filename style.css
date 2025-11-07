@@ -76,3 +76,14 @@ svg {
   font-family: sans-serif;
   line-height: 1.4;
 }
+
+/* Make year slider longer */
+#yearSlider {
+    width: 400px;
+}
+
+/* Legend */
+#legend-container svg {
+    display: block;
+    margin-left: 0;
+}
