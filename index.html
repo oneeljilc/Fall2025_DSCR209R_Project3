@@ -10,8 +10,12 @@
 <body>
     <!--Header/Title-->
     <h1>Project 3</h1>
-    <h1>Mapping Misconduct: Complaint Trends Across NYC Precincts</h1>
     <h2>Team Name: Smooth JAZ</h2>
+    <h1>Mapping Misconduct: Complaint Trends Across NYC Precincts</h1>
+    <p>From 1985 to 2019, civilian complaints increased across NYC, but the escalation was 
+      driven by a small set of precincts — especially Brooklyn’s 75th, which had more than 
+      twice the complaints of any other precinct and remained a consistent hotspot over the 
+      decades.</p>
 
     <!--yearSlider-->
     <div class="controls">
@@ -19,6 +23,9 @@
         <input type="range" id="yearSlider" min="1985" max="2019" step="1" value="1985">
         <span id="yearLabel">1985</span>
     </div>
+
+    <!--Legend-->
+    <div id="legend-container"></div>
 
     <!--heatmap-->
     <svg id="heatmap" width="825" height="675"></svg>
