@@ -140,9 +140,20 @@ svg {
     letter-spacing: 0.3px;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #ddd;  /* thin dividing line */
+    border-bottom: 1px solid #ddd;
 }
 
+.header-link {
+    color: #0645AD;
+    text-decoration: underline;
+    font-size: 0.9rem;
+}
+
+.header-link:hover {
+    color: #0A58CA;
+}
+
+/* Brush tool tip */
 #brush-tip {
   font-size: 0.9rem;
   color: #666;
