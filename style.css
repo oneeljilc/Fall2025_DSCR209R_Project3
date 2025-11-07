@@ -143,3 +143,8 @@ svg {
     border-bottom: 1px solid #ddd;  /* thin dividing line */
 }
 
+#brush-tip {
+  font-size: 0.9rem;
+  color: #666;
+}
+
