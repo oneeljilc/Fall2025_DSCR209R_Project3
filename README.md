@@ -24,6 +24,7 @@ The goal of this project is to visualize civilian complaints against the NYPD fr
 ```
 Fall2025_DSCR209R_Project3/
 ├── index.html                               # Main webpage for the interactive map
+├── writeup.html                             # Webpage for the writeup
 ├── visualization.js                         # D3 logic for map, slider, brushing, legend
 ├── style.css                                # Page styling
 ├── data/
