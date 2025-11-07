@@ -60,6 +60,56 @@ const projection = d3.geoMercator()
 
 const path = d3.geoPath().projection(projection);
 
+  // Dynamic Legend setup ---
+  const legendWidth = 300;
+  const legendHeight = 10;
+
+  const legendSvg = d3.select("#legend-container")
+    .append("svg")
+    .attr("width", legendWidth + 80)
+    .attr("height", 60)
+    .attr("class", "legend");
+
+  const legendGroup = legendSvg.append("g")
+    .attr("transform", "translate(40,20)");
+
+  const defs = legendSvg.append("defs");
+  const linearGradient = defs.append("linearGradient")
+    .attr("id", "legend-gradient");
+
+  linearGradient.selectAll("stop")
+    .data(d3.ticks(0, 1, 10))
+    .enter()
+    .append("stop")
+    .attr("offset", d => d)
+    .attr("stop-color", d => colorScale(d * maxComplaints));
+
+  legendGroup.append("rect")
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .style("fill", "url(#legend-gradient)");
+
+  const legendScale = d3.scaleLinear()
+    .domain([0, maxComplaints])
+    .range([0, legendWidth]);
+
+  const legendAxis = d3.axisBottom(legendScale)
+    .ticks(6)
+    .tickSize(legendHeight + 3);
+
+  legendGroup.append("g")
+    .attr("class", "legend-axis")   // <-- ADD CLASS FOR UPDATE!
+    .attr("transform", `translate(0,${legendHeight})`)
+    .call(legendAxis)
+    .call(g => g.select(".domain").remove());
+
+  legendGroup.append("text")
+    .attr("x", legendWidth / 2)
+    .attr("y", -5)
+    .attr("text-anchor", "middle")
+    .attr("font-weight", "bold")
+    .text("Number of Complaints");
+
 // Draw Heatmap
 function updateHeatmap(selectedYear) {
   yearLabel.textContent = selectedYear; // update label next to slider
@@ -67,6 +117,49 @@ function updateHeatmap(selectedYear) {
    const yearRows = data.filter(
     d => d.year_received === +selectedYear && d.total_complaints > 0
   ); // rows for this year only and have at least one complaint
+
+  // Compute max for this year
+  const yearMax = d3.max(yearRows, d => d.total_complaints) || 1;
+
+  // Blend per-year max with global max for softer scaling
+  const blendedMax = (yearMax * 0.8) + (maxComplaints * 0.2);
+
+  // Update color scale
+  colorScale.domain([0, blendedMax]);
+
+  // Update legend dynamically
+
+  // Round max to nearest 40 for cleaner tick labels
+  const roundedMax = Math.ceil(blendedMax / 40) * 40;
+
+  // Update legend scale
+  legendScale.domain([0, roundedMax]);
+
+  // 5 evenly spaced ticks
+  const tickValues = d3.range(0, roundedMax + 1, roundedMax / 4);
+
+  // Ensure uniqueness, e.g. small early years
+  const uniqueTicks = [...new Set(tickValues)];
+
+  // Update axis ticks
+  legendAxis
+    .tickValues(tickValues)
+    .tickFormat(d3.format("~s"))
+    .tickSize(legendHeight + 3);
+
+  // Redraw axis
+  legendGroup.select(".legend-axis")
+    .call(legendAxis)
+    .call(g => g.select(".domain").remove());
+
+  // Update gradient stops (uses actual blendedMax, not rounded)
+  legendSvg.select("#legend-gradient")
+    .selectAll("stop")
+    .data(d3.ticks(0, 1, 10))
+    .join("stop")
+      .attr("offset", d => d)
+      .attr("stop-color", d => colorScale(d * blendedMax));
+
 
   const byPrecinct = new Map(yearRows.map(d => [d.precinct, d.total_complaints])); // lookup: precinct -> total
 
@@ -113,58 +206,6 @@ precinctPaths.join(
       `Precinct: ${d.properties.precinct}\nComplaints: ${d.properties.total_complaints}`
     );
 }
-
-  // Draw Color Legend, decreased height to make the legend more readable
-  const legendWidth = 300;
-  const legendHeight = 10;
-
-  const legendSvg = d3.select("#legend-container") // Add svg object for legend
-    .append("svg")
-    .attr("width", legendWidth + 80)
-    .attr("height", 60)
-    .attr("class", "legend");
-
-  const legendGroup = legendSvg.append("g")
-    .attr("transform", "translate(40,20)");
-
-  // Create a gradient for the legend
-  const defs = legendSvg.append("defs");
-  const linearGradient = defs.append("linearGradient")
-    .attr("id", "legend-gradient");
-
-  linearGradient.selectAll("stop")
-    .data(d3.ticks(0, 1, 10))
-    .enter()
-    .append("stop")
-    .attr("offset", d => d)
-    .attr("stop-color", d => colorScale(d * maxComplaints));
-
-  // Draw legend rectangle
-  legendGroup.append("rect")
-    .attr("width", legendWidth)
-    .attr("height", legendHeight)
-    .style("fill", "url(#legend-gradient)");
-
-  // Add numeric axis under legend
-  const legendScale = d3.scaleLinear()
-    .domain([0, maxComplaints])
-    .range([0, legendWidth]);
-
-  const legendAxis = d3.axisBottom(legendScale)
-    .ticks(6)
-    .tickSize(legendHeight + 3);
-
-  legendGroup.append("g") // Position and draw legend
-    .attr("transform", `translate(0,${legendHeight})`)
-    .call(legendAxis)
-    .call(g => g.select(".domain").remove());
-
-  legendGroup.append("text") // Add legend title
-    .attr("x", legendWidth / 2)
-    .attr("y", -5)
-    .attr("text-anchor", "middle")
-    .attr("font-weight", "bold")
-    .text("Number of Complaints");
 
   // Initialize heatmap on page load
   updateHeatmap(+yearSlider.value);
