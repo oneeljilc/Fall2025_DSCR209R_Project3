@@ -22,7 +22,7 @@ The goal of this project is to visualize civilian complaints against the NYPD fr
 
 ## Files
 ```
-Fall2025_DSCR209R_Project3/
+NYPD_misconduct_heatmap/
 ├── index.html                               # Main webpage for the interactive map
 ├── writeup.html                             # Webpage for the writeup
 ├── visualization.js                         # D3 logic for map, slider, brushing, legend
